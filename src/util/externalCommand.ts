@@ -1,5 +1,6 @@
 import { configuration } from '../configuration/configuration';
 import { ErrorCode, VimError } from '../error';
+import * as vscode from 'vscode';
 
 class ExternalCommand {
   private previousExternalCommand: string | undefined;
@@ -35,6 +36,10 @@ class ExternalCommand {
     return result.join('');
   }
 
+  private getCurrentWorkingDirectory(): string {
+    return vscode.workspace.workspaceFolders?.[0].uri.fsPath || process.cwd();
+  }
+
   /**
    * Executes `command` and returns the output.
    * @param command the command to run
@@ -44,6 +49,7 @@ class ExternalCommand {
     const output: string[] = [];
     const options = {
       shell: configuration.shell || undefined,
+      cwd: this.getCurrentWorkingDirectory(),
     };
 
     try {
